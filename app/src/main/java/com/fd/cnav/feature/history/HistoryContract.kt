@@ -18,7 +18,7 @@ object HistoryContract {
 
     sealed class Effect {
         data object NavigateBack : Effect()
-        data class NavigateToDetail(val productId: Int) : Effect()
+        data class NavigateToDetail(val product: com.fd.cnav.data.model.Product) : Effect()
     }
 
     enum class HistoryTab(val label: String) {

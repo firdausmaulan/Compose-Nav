@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.fd.cnav.feature.history.HistoryScreen
+import com.fd.cnav.feature.productdetail.ProductDetailArgs
 import com.fd.cnav.feature.productdetail.ProductDetailScreen
+import com.fd.cnav.feature.productdetail.ProductSource
 import com.fd.cnav.feature.productlist.ProductListScreen
 import com.fd.cnav.navigation.AppKey
 import com.fd.cnav.ui.theme.ComposeNavTheme
@@ -19,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeNavTheme {
-                val backStack = remember { androidx.compose.runtime.mutableStateListOf<AppKey>(AppKey.ProductList) }
+                val backStack = remember { mutableStateListOf<AppKey>(AppKey.ProductList) }
 
                 NavDisplay(
                     backStack = backStack,
@@ -27,8 +30,12 @@ class MainActivity : ComponentActivity() {
                     entryProvider = entryProvider {
                         entry<AppKey.ProductList> {
                             ProductListScreen(
-                                onNavigateToDetail = { productId ->
-                                    backStack.add(AppKey.ProductDetail(productId))
+                                onNavigateToDetail = { product ->
+                                    backStack.add(
+                                        AppKey.ProductDetail(
+                                            ProductDetailArgs(product, ProductSource.LIST)
+                                        )
+                                    )
                                 },
                                 onNavigateToHistory = {
                                     backStack.add(AppKey.History)
@@ -38,15 +45,18 @@ class MainActivity : ComponentActivity() {
                         entry<AppKey.History> {
                             HistoryScreen(
                                 onNavigateBack = { backStack.removeLastOrNull() },
-                                onNavigateToDetail = { productId ->
-                                    backStack.add(AppKey.ProductDetail(productId, fromHistory = true))
+                                onNavigateToDetail = { product ->
+                                    backStack.add(
+                                        AppKey.ProductDetail(
+                                            ProductDetailArgs(product, ProductSource.HISTORY)
+                                        )
+                                    )
                                 }
                             )
                         }
                         entry<AppKey.ProductDetail> { key ->
                             ProductDetailScreen(
-                                productId = key.productId,
-                                fromHistory = key.fromHistory,
+                                args = key.args,
                                 onNavigateBack = { backStack.removeLastOrNull() },
                                 onNavigateToHistory = {
                                     backStack.add(AppKey.History)

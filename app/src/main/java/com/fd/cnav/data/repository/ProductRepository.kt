@@ -1,6 +1,7 @@
 package com.fd.cnav.data.repository
 
 import com.fd.cnav.data.model.Product
+import kotlinx.coroutines.delay
 
 class ProductRepository {
 
@@ -18,4 +19,13 @@ class ProductRepository {
     )
 
     fun getProductById(id: Int): Product? = getProducts().find { it.id == id }
+
+    /** Simulates a network fetch. Throws [Exception] to demonstrate the fallback strategy. */
+    suspend fun fetchProductById(id: Int): Product {
+        delay(800) // simulate network latency
+        // Toggle the line below to simulate a network error:
+        // throw Exception("Network unavailable")
+        return getProducts().find { it.id == id }
+            ?: throw NoSuchElementException("Product $id not found on server")
+    }
 }

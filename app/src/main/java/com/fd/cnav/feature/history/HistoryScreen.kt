@@ -51,7 +51,7 @@ import com.fd.cnav.feature.history.HistoryContract.HistoryTab
 fun HistoryScreen(
     viewModel: HistoryViewModel = viewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToDetail: (Int) -> Unit
+    onNavigateToDetail: (com.fd.cnav.data.model.Product) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val tabs = HistoryTab.entries
@@ -59,7 +59,7 @@ fun HistoryScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is HistoryContract.Effect.NavigateToDetail -> onNavigateToDetail(effect.productId)
+                is HistoryContract.Effect.NavigateToDetail -> onNavigateToDetail(effect.product)
                 HistoryContract.Effect.NavigateBack -> onNavigateBack()
             }
         }

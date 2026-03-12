@@ -47,7 +47,7 @@ import com.fd.cnav.data.model.Product
 @Composable
 fun ProductListScreen(
     viewModel: ProductListViewModel = viewModel(),
-    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToDetail: (com.fd.cnav.data.model.Product) -> Unit,
     onNavigateToHistory: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -55,7 +55,7 @@ fun ProductListScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is ProductListContract.Effect.NavigateToDetail -> onNavigateToDetail(effect.productId)
+                is ProductListContract.Effect.NavigateToDetail -> onNavigateToDetail(effect.product)
                 ProductListContract.Effect.NavigateToHistory -> onNavigateToHistory()
             }
         }

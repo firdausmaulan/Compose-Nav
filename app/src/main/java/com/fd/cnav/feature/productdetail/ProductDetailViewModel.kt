@@ -13,18 +13,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductDetailViewModel(
-    private val productId: Int,
+    private val args: ProductDetailArgs,
     private val repository: ProductRepository = ProductRepository()
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProductDetailContract.State(isLoading = true))
+    private val _state = MutableStateFlow(
+        ProductDetailContract.State(product = args.product, isRefreshing = true)
+    )
     val state: StateFlow<ProductDetailContract.State> = _state.asStateFlow()
 
     private val _effect = Channel<ProductDetailContract.Effect>()
     val effect = _effect.receiveAsFlow()
 
     init {
-        loadProduct()
+        fetchFreshData()
     }
 
     fun onIntent(intent: ProductDetailContract.Intent) {
@@ -39,25 +41,31 @@ class ProductDetailViewModel(
                     _effect.send(ProductDetailContract.Effect.NavigateToHistory)
                 }
             }
+            ProductDetailContract.Intent.OnRetry -> fetchFreshData()
         }
     }
 
-    private fun loadProduct() {
+    private fun fetchFreshData() {
+        _state.update { it.copy(isRefreshing = true, error = null) }
         viewModelScope.launch {
-            val product = repository.getProductById(productId)
-            _state.update {
-                it.copy(
-                    product = product,
-                    isLoading = false,
-                    error = if (product == null) "Product not found" else null
-                )
+            try {
+                val fresh = repository.fetchProductById(args.product.id)
+                _state.update { it.copy(product = fresh, isFreshData = true, isRefreshing = false) }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isFreshData = false,
+                        isRefreshing = false,
+                        error = "Couldn't refresh. Showing cached data."
+                    )
+                }
             }
         }
     }
 
-    class Factory(private val productId: Int) : ViewModelProvider.Factory {
+    class Factory(private val args: ProductDetailArgs) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ProductDetailViewModel(productId) as T
+            ProductDetailViewModel(args) as T
     }
 }

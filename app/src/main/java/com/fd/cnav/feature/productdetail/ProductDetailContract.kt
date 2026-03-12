@@ -6,13 +6,15 @@ object ProductDetailContract {
 
     data class State(
         val product: Product? = null,
-        val isLoading: Boolean = false,
+        val isFreshData: Boolean = false,
+        val isRefreshing: Boolean = false,
         val error: String? = null
     )
 
     sealed class Intent {
         data object OnBackClicked : Intent()
         data object OnAddToCartClicked : Intent()
+        data object OnRetry : Intent()
     }
 
     sealed class Effect {

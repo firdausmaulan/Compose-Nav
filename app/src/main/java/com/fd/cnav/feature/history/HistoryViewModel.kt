@@ -33,7 +33,7 @@ class HistoryViewModel(
             }
             is HistoryContract.Intent.OnOrderClicked -> {
                 viewModelScope.launch {
-                    _effect.send(HistoryContract.Effect.NavigateToDetail(intent.order.product.id))
+                    _effect.send(HistoryContract.Effect.NavigateToDetail(intent.order.product))
                 }
             }
         }

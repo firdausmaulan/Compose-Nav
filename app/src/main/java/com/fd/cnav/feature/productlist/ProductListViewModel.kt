@@ -29,7 +29,7 @@ class ProductListViewModel(
         when (intent) {
             is ProductListContract.Intent.OnProductClicked -> {
                 viewModelScope.launch {
-                    _effect.send(ProductListContract.Effect.NavigateToDetail(intent.product.id))
+                    _effect.send(ProductListContract.Effect.NavigateToDetail(intent.product))
                 }
             }
             ProductListContract.Intent.OnHistoryClicked -> {

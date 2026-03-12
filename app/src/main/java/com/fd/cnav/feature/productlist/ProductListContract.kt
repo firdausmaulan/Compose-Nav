@@ -15,7 +15,7 @@ object ProductListContract {
     }
 
     sealed class Effect {
-        data class NavigateToDetail(val productId: Int) : Effect()
+        data class NavigateToDetail(val product: Product) : Effect()
         data object NavigateToHistory : Effect()
     }
 }
