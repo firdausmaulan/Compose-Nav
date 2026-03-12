@@ -34,6 +34,11 @@ class ProductDetailViewModel(
                     _effect.send(ProductDetailContract.Effect.NavigateBack)
                 }
             }
+            ProductDetailContract.Intent.OnAddToCartClicked -> {
+                viewModelScope.launch {
+                    _effect.send(ProductDetailContract.Effect.NavigateToHistory)
+                }
+            }
         }
     }
 

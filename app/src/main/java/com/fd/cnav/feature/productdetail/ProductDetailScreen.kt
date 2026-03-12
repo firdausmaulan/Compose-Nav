@@ -45,7 +45,9 @@ import com.fd.cnav.R
 @Composable
 fun ProductDetailScreen(
     productId: Int,
+    fromHistory: Boolean = false,
     onNavigateBack: () -> Unit,
+    onNavigateToHistory: () -> Unit = {},
     viewModel: ProductDetailViewModel = viewModel(
         key = "product_$productId",
         factory = ProductDetailViewModel.Factory(productId)
@@ -57,6 +59,7 @@ fun ProductDetailScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 ProductDetailContract.Effect.NavigateBack -> onNavigateBack()
+                ProductDetailContract.Effect.NavigateToHistory -> onNavigateToHistory()
             }
         }
     }
@@ -98,7 +101,7 @@ fun ProductDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Image(
-                        painter = painterResource(R.mipmap.ic_launcher),
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
                         contentDescription = product.name,
                         modifier = Modifier
                             .size(180.dp)
@@ -162,12 +165,14 @@ fun ProductDetailScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(text = "Add to Cart", modifier = Modifier.padding(vertical = 4.dp))
+                    if (!fromHistory) {
+                        Button(
+                            onClick = { viewModel.onIntent(ProductDetailContract.Intent.OnAddToCartClicked) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(text = "Add to Cart", modifier = Modifier.padding(vertical = 4.dp))
+                        }
                     }
                 }
             }

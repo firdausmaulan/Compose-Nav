@@ -37,13 +37,20 @@ class MainActivity : ComponentActivity() {
                         }
                         entry<AppKey.History> {
                             HistoryScreen(
-                                onNavigateBack = { backStack.removeLastOrNull() }
+                                onNavigateBack = { backStack.removeLastOrNull() },
+                                onNavigateToDetail = { productId ->
+                                    backStack.add(AppKey.ProductDetail(productId, fromHistory = true))
+                                }
                             )
                         }
                         entry<AppKey.ProductDetail> { key ->
                             ProductDetailScreen(
                                 productId = key.productId,
-                                onNavigateBack = { backStack.removeLastOrNull() }
+                                fromHistory = key.fromHistory,
+                                onNavigateBack = { backStack.removeLastOrNull() },
+                                onNavigateToHistory = {
+                                    backStack.add(AppKey.History)
+                                }
                             )
                         }
                     }

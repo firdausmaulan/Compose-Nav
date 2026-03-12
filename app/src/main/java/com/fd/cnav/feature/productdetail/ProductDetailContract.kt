@@ -12,9 +12,11 @@ object ProductDetailContract {
 
     sealed class Intent {
         data object OnBackClicked : Intent()
+        data object OnAddToCartClicked : Intent()
     }
 
     sealed class Effect {
         data object NavigateBack : Effect()
+        data object NavigateToHistory : Effect()
     }
 }

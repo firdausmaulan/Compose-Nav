@@ -1,5 +1,6 @@
 package com.fd.cnav.feature.productlist
 
+import android.R.attr.fontWeight
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -118,7 +119,7 @@ private fun ProductItem(product: Product, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(R.mipmap.ic_launcher),
+                painter = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = product.name,
                 modifier = Modifier
                     .size(64.dp)
@@ -148,7 +149,7 @@ private fun ProductItem(product: Product, onClick: () -> Unit) {
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "$${"%.2f".format(product.price)}",
+                text = "$%.2f".format(product.price),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

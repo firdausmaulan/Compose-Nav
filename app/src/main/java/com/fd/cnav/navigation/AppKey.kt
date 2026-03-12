@@ -11,5 +11,5 @@ sealed class AppKey {
     data object History : AppKey()
 
     @Serializable
-    data class ProductDetail(val productId: Int) : AppKey()
+    data class ProductDetail(val productId: Int, val fromHistory: Boolean = false) : AppKey()
 }

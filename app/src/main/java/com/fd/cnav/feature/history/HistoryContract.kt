@@ -13,10 +13,12 @@ object HistoryContract {
 
     sealed class Intent {
         data class OnTabSelected(val tab: HistoryTab) : Intent()
+        data class OnOrderClicked(val order: Order) : Intent()
     }
 
     sealed class Effect {
         data object NavigateBack : Effect()
+        data class NavigateToDetail(val productId: Int) : Effect()
     }
 
     enum class HistoryTab(val label: String) {

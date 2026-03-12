@@ -1,6 +1,7 @@
 package com.fd.cnav.feature.history
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -48,10 +50,20 @@ import com.fd.cnav.feature.history.HistoryContract.HistoryTab
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel = viewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToDetail: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val tabs = HistoryTab.entries
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is HistoryContract.Effect.NavigateToDetail -> onNavigateToDetail(effect.productId)
+                HistoryContract.Effect.NavigateBack -> onNavigateBack()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -106,7 +118,10 @@ fun HistoryScreen(
                     ) {
                         item { Spacer(modifier = Modifier.size(4.dp)) }
                         items(orders, key = { it.id }) { order ->
-                            OrderItem(order = order)
+                            OrderItem(
+                                order = order,
+                                onClick = { viewModel.onIntent(HistoryContract.Intent.OnOrderClicked(order)) }
+                            )
                         }
                         item { Spacer(modifier = Modifier.size(4.dp)) }
                     }
@@ -117,9 +132,11 @@ fun HistoryScreen(
 }
 
 @Composable
-private fun OrderItem(order: Order) {
+private fun OrderItem(order: Order, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -128,7 +145,7 @@ private fun OrderItem(order: Order) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(R.mipmap.ic_launcher),
+                painter = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = order.product.name,
                 modifier = Modifier
                     .size(56.dp)
@@ -159,7 +176,7 @@ private fun OrderItem(order: Order) {
                 com.fd.cnav.data.model.OrderStatus.COMPLETED -> MaterialTheme.colorScheme.primary
             }
             Text(
-                text = "$${"%.2f".format(order.product.price * order.quantity)}",
+                text = "%.2f".format(order.product.price * order.quantity),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = statusColor
